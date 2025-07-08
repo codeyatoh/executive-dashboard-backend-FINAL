@@ -1,0 +1,15 @@
+{
+  "host": "HOST",
+  "port": {
+    "__name": "PORT",
+    "__format": "number"
+  },
+  "postgres": {
+    "connection": {
+      "host": "PG_HOST",
+      "user": "PG_USER",
+      "password": "PG_PASSWORD",
+      "database": "PG_DATABASE"
+    }
+  }
+}
