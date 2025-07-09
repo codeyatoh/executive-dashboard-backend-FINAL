@@ -5,11 +5,12 @@ export const orderItemsSchema = {
   $id: 'OrderItems',
   type: 'object',
   additionalProperties: false,
-  required: ['order_items_id', 'order_id', 'item_name', 'quantity', 'price'],
+  required: ['order_items_id', 'order_id', 'item_name', 'category', 'quantity', 'price'],
   properties: {
     order_items_id: { type: 'string' },
     order_id: { type: 'string' },
     item_name: { type: 'string' },
+    category: { type: 'string' },
     quantity: { type: 'integer' },
     price: { type: 'number' }
   }
@@ -23,7 +24,7 @@ export const orderItemsDataSchema = {
   $id: 'OrderItemsData',
   type: 'object',
   additionalProperties: false,
-  required: ['order_items_id', 'order_id', 'item_name', 'quantity', 'price'],
+  required: ['order_items_id', 'order_id', 'item_name', 'category', 'quantity', 'price'],
   properties: {
     ...orderItemsSchema.properties
   }

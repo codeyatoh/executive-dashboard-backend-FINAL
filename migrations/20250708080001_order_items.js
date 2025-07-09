@@ -3,6 +3,7 @@ export async function up(knex) {
     table.string('order_items_id').primary();
     table.string('order_id').references('order_id').inTable('orders');
     table.string('item_name');
+    table.string('category');
     table.integer('quantity');
     table.decimal('price', 10, 2);
   });
