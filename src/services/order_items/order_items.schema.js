@@ -5,9 +5,9 @@ export const orderItemsSchema = {
   $id: 'OrderItems',
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'order_id', 'item_name', 'quantity', 'price'],
+  required: ['order_items_id', 'order_id', 'item_name', 'quantity', 'price'],
   properties: {
-    id: { type: 'integer' },
+    order_items_id: { type: 'string' },
     order_id: { type: 'string' },
     item_name: { type: 'string' },
     quantity: { type: 'integer' },
@@ -23,7 +23,7 @@ export const orderItemsDataSchema = {
   $id: 'OrderItemsData',
   type: 'object',
   additionalProperties: false,
-  required: ['order_id', 'item_name', 'quantity', 'price'],
+  required: ['order_items_id', 'order_id', 'item_name', 'quantity', 'price'],
   properties: {
     ...orderItemsSchema.properties
   }

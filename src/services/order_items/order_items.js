@@ -17,6 +17,7 @@ export * from './order_items.schema.js'
 
 export const order_items = app => {
   app.use(orderItemsPath, new OrderItemsService(getOptions(app)), {
+    id: 'order_items_id',
     methods: orderItemsMethods,
     events: []
   })

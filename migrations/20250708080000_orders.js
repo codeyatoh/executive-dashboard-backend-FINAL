@@ -4,6 +4,7 @@ export async function up(knex) {
     table.string('crew_id').references('crew_id').inTable('crew');
     table.decimal('total_price', 10, 2);
     table.string('order_status');
+    table.string('order_type');
     table.timestamp('created_at');
   });
 }

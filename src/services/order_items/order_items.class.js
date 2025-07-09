@@ -7,6 +7,6 @@ export const getOptions = app => {
     paginate: app.get('paginate'),
     Model: app.get('postgresqlClient'),
     name: 'order_items',
-    id: 'id'
+    id: 'order_items_id'
   }
 } 

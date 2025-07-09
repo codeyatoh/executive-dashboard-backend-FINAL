@@ -61,7 +61,16 @@ app.post('/receive-order', async (req, res) => {
       crewResult = await app.service('crew').create(crew);
     }
 
-    const orderResult = await app.service('orders').create(order);
+    // Check if order already exists
+    let orderResult;
+    try {
+      orderResult = await app.service('orders').get(order.order_id);
+      // If found, skip creation
+      console.log('Order already exists, skipping insert:', orderResult);
+    } catch (e) {
+      // If not found, create
+      orderResult = await app.service('orders').create(order);
+    }
 
     // Save each order item
     const orderItemsResults = [];
