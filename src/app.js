@@ -34,7 +34,10 @@ app.configure(rest())
 app.configure(
   socketio({
     cors: {
-      origin: app.get('origins')
+      origin: '*',
+      methods: ['GET', 'POST'],
+      allowedHeaders: ['Content-Type'],
+      credentials: true
     }
   })
 )
@@ -49,43 +52,47 @@ app.post('/receive-order', async (req, res) => {
   console.log('Received from frontend:', req.body);
 
   const { crew, order, order_items } = req.body;
+  const knex = app.get('postgresqlClient');
+
+  // Validate that order_items is a non-empty array
+  if (!Array.isArray(order_items) || order_items.length === 0) {
+    return res.status(400).json({ error: 'Order must have at least one item.' });
+  }
+
   try {
-    // Check if crew already exists
-    let crewResult;
-    try {
-      crewResult = await app.service('crew').get(crew.crew_id);
-      // Optionally, update crew info if needed:
-      // crewResult = await app.service('crew').patch(crew.crew_id, crew);
-    } catch (e) {
-      // If not found, create
-      crewResult = await app.service('crew').create(crew);
-    }
-
-    // Check if order already exists
-    let orderResult;
-    try {
-      orderResult = await app.service('orders').get(order.order_id);
-      // If found, skip creation
-      console.log('Order already exists, skipping insert:', orderResult);
-    } catch (e) {
-      // If not found, create
-      orderResult = await app.service('orders').create(order);
-    }
-
-    // Save each order item
-    const orderItemsResults = [];
-    if (Array.isArray(order_items)) {
-      for (const item of order_items) {
-        orderItemsResults.push(await app.service('order_items').create(item));
+    await knex.transaction(async trx => {
+      // Save crew (if needed)
+      let crewResult;
+      try {
+        crewResult = await app.service('crew').get(crew.crew_id);
+      } catch (e) {
+        crewResult = await app.service('crew').create(crew, { transaction: trx });
       }
-    }
 
-    // Log what was saved
-    console.log('Crew saved:', crewResult);
-    console.log('Order saved:', orderResult);
-    console.log('Order items saved:', orderItemsResults);
+      // Save order
+      let orderResult;
+      try {
+        orderResult = await app.service('orders').get(order.order_id);
+        console.log('Order already exists, skipping insert:', orderResult);
+      } catch (e) {
+        orderResult = await app.service('orders').create(order, { transaction: trx });
+      }
 
-    res.json({ message: 'Order, crew, and items saved!', crew: crewResult, order: orderResult, order_items: orderItemsResults });
+      // Save order_items
+      const orderItemsResults = [];
+      for (const item of order_items) {
+        orderItemsResults.push(
+          await app.service('order_items').create(item, { transaction: trx })
+        );
+      }
+
+      // Log what was saved
+      console.log('Crew saved:', crewResult);
+      console.log('Order saved:', orderResult);
+      console.log('Order items saved:', orderItemsResults);
+
+      res.json({ message: 'Order, crew, and items saved!', crew: crewResult, order: orderResult, order_items: orderItemsResults });
+    });
   } catch (error) {
     console.error('Error in /receive-order:', error.message, error.data);
     res.status(400).json({ error: error.message, data: error.data });

@@ -2,12 +2,10 @@
   "host": "localhost",
   "port": 3030,
   "public": "./public/",
-  "origins": [
-    "http://localhost:3030"
-  ],
+  "origins": ["*"],
   "paginate": {
-    "default": 10,
-    "max": 50
+    "default": 1000,
+    "max": 5000
   },
   "postgres": {
     "client": "pg",
